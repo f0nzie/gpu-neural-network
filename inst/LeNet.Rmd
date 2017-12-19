@@ -5,6 +5,8 @@ output: html_notebook
 
 Source: http://mxnet.incubator.apache.org/tutorials/r/mnistCompetition.html
 
+> Test one at a time: CPU or GPU but not one after the other. RStudio will crash.
+
 Now let’s use a new network structure: LeNet. It has been proposed by Yann LeCun for recognizing handwritten digits. We’ll demonstrate how to construct and train a LeNet in mxnet.
 
 ```{r}
@@ -58,6 +60,8 @@ dim(test.array) <- c(28, 28, 1, ncol(test))
 ```
 
 
+## Define the devices
+
 ```{r}
 # We want to compare training speed on different devices, so define the devices:
 n.gpu <- 1
@@ -67,6 +71,8 @@ device.gpu <- lapply(0:(n.gpu-1), function(i) {
 })
 # We can pass a list of devices to ask MXNet to train on multiple GPUs (you can do this for CPUs, but because internal computation of CPUs is already multi-threaded, there is less gain than with using GPUs).
 ```
+
+## Train with the CPU
 
 ```{r}
 # Start by training on the CPU first. Because this takes a bit time, we run it for just one iteration.
@@ -79,6 +85,9 @@ model <- mx.model.FeedForward.create(lenet, X=train.array, y=train.y,
                                      wd=0.00001,
                                      eval.metric=mx.metric.accuracy,
                                      epoch.end.callback=mx.callback.log.train.metric(100))
+print(proc.time() - tic)
+ #   user  system elapsed 
+ # 142.34  140.79   53.61 
 ```
 
 ```{r}
@@ -86,19 +95,23 @@ print(proc.time() - tic)
 ```
 
 
+## Train with the GPU
+
 ```{r}
 # train on a GPU
-    mx.set.seed(0)
-    tic <- proc.time()
+mx.set.seed(0)
+tic <- proc.time()
 model <- mx.model.FeedForward.create(lenet, X=train.array, y=train.y,
-                                     ctx=device.gpu, num.round=5,
+                                     ctx = device.gpu, num.round=5,
                                      array.batch.size=100,
                                      learning.rate=0.05, momentum=0.9,
                                      wd=0.00001,
                                      eval.metric=mx.metric.accuracy, 
                                      epoch.end.callback = mx.callback.log.train.metric(100))
 
-    print(proc.time() - tic)    
+print(proc.time() - tic)   
+  #  user  system elapsed 
+  # 19.03   65.26   40.92 
 ```
 
 By using a GPU processor, we significantly speed up training! Now, we can submit the result to Kaggle to see the improvement of our ranking!
