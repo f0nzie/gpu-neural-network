@@ -1,0 +1,80 @@
+---
+title: "Check if GPU installed in Tensorflow"
+output: html_notebook
+---
+
+> If CUDA and cudnn64_6.dll have been installed, then we should get a list of devices as shown below:
+
+```{r}
+library(tensorflow)
+reticulate::use_condaenv("r-tensorflow")
+
+tf <- tf$Session(config=tf$ConfigProto(log_device_placement=TRUE))
+tf$list_devices()
+
+# > tf$list_devices()
+# [[1]]
+# _DeviceAttributes(/job:localhost/replica:0/task:0/device:CPU:0, CPU, 268435456)
+# 
+# [[2]]
+# _DeviceAttributes(/job:localhost/replica:0/task:0/device:GPU:0, GPU, 1546790502)
+```
+
+
+
+Source: https://stackoverflow.com/questions/38009682/how-to-tell-if-tensorflow-is-using-gpu-acceleration-from-inside-python-shell
+
+
+    "/cpu:0": The CPU of your machine.
+    "/gpu:0": The GPU of your machine, if you have one.
+
+```{r}
+reticulate::use_condaenv("r-tensorflow")
+reticulate::py_config()
+```
+
+```{python}
+
+import tensorflow as tf
+with tf.device('/cpu:0'):
+    a = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[2, 3], name='a')
+    b = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[3, 2], name='b')
+    c = tf.matmul(a, b)
+
+with tf.Session() as sess:
+    print (sess.run(c))
+    
+<!-- [[ 22.  28.] -->
+<!--  [ 49.  64.]]     -->
+```
+
+
+
+```{python}
+
+import tensorflow as tf
+
+
+with tf.device('/gpu:0'):
+    a = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[2, 3], name='a')
+    b = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[3, 2], name='b')
+    c = tf.matmul(a, b)
+
+with tf.Session() as sess:
+    print (sess.run(c))
+    
+# tf.list_devices()
+
+```
+
+If you have a gpu and can use it, you will see the result. Otherwise you will see an error with a long stacktrace. In the end you will have something like this:
+
+
+
+
+
+```{python}
+from tensorflow.python.client import device_lib
+print(device_lib.list_local_devices())
+```
+
