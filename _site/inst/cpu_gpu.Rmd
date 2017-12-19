@@ -5,6 +5,8 @@ output: html_notebook
 
 Source: https://github.com/apache/incubator-mxnet/issues/5052
 
+Why does it take GPU longer than CPU?
+
 
 ```{r}
 ## Load required packages

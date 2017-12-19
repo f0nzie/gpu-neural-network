@@ -3,6 +3,9 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+`gpuR` works straight out of the bat!
+
+
 ```{r}
 library(gpuR)
 for(i in seq(1:2)) {

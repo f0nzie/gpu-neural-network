@@ -13,5 +13,7 @@ knitr::opts_chunk$set(
 
 # gpu-neural-network
 
-The goal of gpu-neural-network is to ...
+The goal of gpu-neural-network is to benchmark GPU using packages and tools available in R.
+
+
 
